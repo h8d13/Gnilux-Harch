@@ -1,0 +1,7 @@
+/etc/
+- fstab
+- mtab 
+- sysctl
+- environment
+- default
+- sudoers 
