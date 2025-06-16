@@ -1,41 +1,35 @@
 #!/bin/python3
-paconf_path = "/etc/pacman.conf"
-with open(paconf_path) as f:
-    lines = f.readlines()
+lines = open("/etc/pacman.conf").readlines()
+new = []
+has_candy = any("ILoveCandy" in l for l in lines)
+candy_done = False
+in_multi = False
 
-new_lines = []
-has_candy = any("ILoveCandy" in line for line in lines)
-inserted_candy = False
-in_multilib = False
+for l in lines:
+    s = l.strip()
 
-for line in lines:
-    stripped = line.strip()
-
-    if stripped == "#Color":
-        new_lines.append("Color\n")
+    if s == "#Color":
+        new.append("Color\n")
         continue
 
-    if stripped == "# Misc options" and not has_candy and not inserted_candy:
-        new_lines.append(line)
-        new_lines.append("ILoveCandy\n")
-        inserted_candy = True
+    if s == "# Misc options" and not has_candy and not candy_done:
+        new += [l, "ILoveCandy\n"]
+        candy_done = True
         continue
 
-    if stripped == "#[multilib]":
-        new_lines.append("[multilib]\n")
-        in_multilib = True
+    if s == "#[multilib]":
+        new.append("[multilib]\n")
+        in_multi = True
         continue
 
-    if in_multilib and stripped.startswith("#Include"):
-        new_lines.append("Include = /etc/pacman.d/mirrorlist\n")
-        in_multilib = False
+    if in_multi and s.startswith("#Include"):
+        new.append("Include = /etc/pacman.d/mirrorlist\n")
+        in_multi = False
         continue
 
-    if stripped == "[multilib]":
-        in_multilib = False  # already enabled, don't touch
-        continue
+    if s == "[multilib]":
+        in_multi = False
+        # don't touch
+    new.append(l)
 
-    new_lines.append(line)
-
-with open(paconf_path, "w") as f:
-    f.writelines(new_lines)
+open("/etc/pacman.conf", "w").writelines(new)
