@@ -1,8 +1,8 @@
 #!/bin/python3
+
 lines = open("/etc/pacman.conf").readlines()
 new = []
 has_candy = any("ILoveCandy" in l for l in lines)
-candy_done = False
 in_multi = False
 
 for l in lines:
@@ -12,9 +12,8 @@ for l in lines:
         new.append("Color\n")
         continue
 
-    if s == "# Misc options" and not has_candy and not candy_done:
+    if s == "# Misc options" and not has_candy:
         new += [l, "ILoveCandy\n"]
-        candy_done = True
         continue
 
     if s == "#[multilib]":
@@ -28,8 +27,8 @@ for l in lines:
         continue
 
     if s == "[multilib]":
-        in_multi = False
-        # don't touch
+        in_multi = False  # already enabled
+
     new.append(l)
 
 open("/etc/pacman.conf", "w").writelines(new)
