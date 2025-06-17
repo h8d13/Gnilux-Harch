@@ -1,2 +1,5 @@
 ## latest installs:
 # ls -lt --time=mtime /var/lib/pacman/local/ | grep '^d' | awk '{for (i=6; i<=NF; i++) printf $i" "; print ""}' | sed 's/ $//'
+
+## remove orphans
+# pacman -Rns $(pacman -Qdtq)
